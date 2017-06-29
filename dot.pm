@@ -23,21 +23,23 @@ sub add {
 		$h->{$k} = $v;
 	}
 }
-sub new {
-	my $h;
-	$h = {new => \&new,
-	      add => sub {
-		      add($h, @_);
-	      },
-	      evolve => sub {
-		      my ($cref, @arg) = @_;
-		      my $from = $h->{new};
-		      $h->{new} = sub {
-			      my $o = $from->();
-			      $o->{evolve}($cref, @arg);
-			      $o;
-		      };
-		      $cref->($h, @arg);
-	      }};
+sub mod {
+	my $h = shift;
+	add($h,
+	    add => sub {
+		    add($h, @_);
+	    },
+	    evolve => sub {
+		    my $cref = shift;
+		    push @{$h->{history}}, {cref => $cref,
+					    arg => [@_]};
+		    $cref->($h, @_);
+	    },
+	    clone => sub {
+		    my $o = {};
+		    $_->{cref}($o, @{$_->{arg}}) for @{$h->{history}};
+		    $o;
+	    });
+	$h;
 }
 1;
