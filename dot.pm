@@ -16,6 +16,8 @@
 package dot;
 use warnings;
 use strict;
+use c;
+our @A = qw/Scalar::Util/;
 sub add {
 	my $h = shift;
 	while (@_) {
@@ -25,7 +27,9 @@ sub add {
 }
 sub mod {
 	my $h = shift;
+	weaken($h);
 	add($h,
+	    weaken => \&weaken,
 	    add => sub {
 		    add($h, @_);
 	    },
