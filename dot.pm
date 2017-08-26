@@ -14,10 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package dot;
-use warnings;
-use strict;
-use c;
-our @A = qw/Scalar::Util/;
+use c 'sane', 'autoload' => ['Scalar::Util'];
 sub add {
 	my $h = shift;
 	while (@_) {
