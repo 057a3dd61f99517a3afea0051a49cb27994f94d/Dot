@@ -63,8 +63,9 @@ BEGIN {
 				for my $p (@{+shift}) {
 					my $r = $p =~ s|::|/|gr . '.pm';
 					# ignore already loaded module.
-					next if $INC{$r};
-					*{"${p}::AUTOLOAD"} = sub {
+					my $f = "${p}::AUTOLOAD";
+					next if $INC{$r} or *$f{CODE};
+					*$f = sub {
 						my ($f) = do { our $AUTOLOAD =~ /.*::(.*)/ };
 						my $symtab = *{"${p}::"}{HASH};
 						delete $symtab->{AUTOLOAD};
