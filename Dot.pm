@@ -97,6 +97,9 @@ sub mod {
 	    add => sub {
 		    unshift @_, $o;
 		    goto &add;
+	    },
+	    del => sub {
+		    map { $_ => delete $o->{$_} } @_;
 	    });
 	$o;
 }
