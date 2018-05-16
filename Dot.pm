@@ -46,7 +46,8 @@ BEGIN {
 					for my $p ($map{$f} || @pkg) {
 						#   calculate the actual file to be loaded thus avoid eval and
 						# checking $@ mannually.
-						do { require $p =~ s|::|/|gr . '.pm' };
+						my $r = do { $p =~ s|::|/|gr . '.pm' };
+						require $r if not $INC{$r};
 						if (my $r = *{"${p}::$f"}{CODE}) {
 							no warnings 'prototype';
 							*$q = $r;
