@@ -17,16 +17,19 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 =cut
+require v5.14;
 use ExtUtils::MakeMaker;
 my $me = '://github.com/057a3dd61f99517a3afea0051a49cb27994f94d/Dot';
 WriteMakefile(NAME => 'Dot',
 	      ABSTRACT => 'The beginning of a Perl universe',
 	      AUTHOR => ['Yang Bo <rslovers@yandex.com>'],
 	      MAN3PODS => {'Dot.pm' => 'blib/man3/Dot.3'},
+	      VERSION_FROM => 'Dot.pm',
 	      META_MERGE => {resources => {repository => {type => 'git',
 							  url => "git$me.git",
 							  web => "https$me"},
 					   homepage => "https$me",
 					   bugtracker => {web => "https$me/issues"}},
+			     prereqs => {test => {requires => {'Test::More' => 0}}},
 			     'meta-spec' => {version => 2}},
 	      LICENSE => 'gpl_3');
