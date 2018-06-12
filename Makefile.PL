@@ -23,7 +23,6 @@ my $me = '://github.com/057a3dd61f99517a3afea0051a49cb27994f94d/Dot';
 WriteMakefile(NAME => 'Dot',
 	      ABSTRACT => 'The beginning of a Perl universe',
 	      AUTHOR => ['Yang Bo <rslovers@yandex.com>'],
-	      MAN3PODS => {'Dot.pm' => 'blib/man3/Dot.3'},
 	      VERSION_FROM => 'Dot.pm',
 	      META_MERGE => {resources => {repository => {type => 'git',
 							  url => "git$me.git",
