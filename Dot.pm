@@ -22,6 +22,14 @@ use strict;
 use warnings qw/all FATAL uninitialized/;
 use feature qw/state say/;
 
+sub _require ($) {
+	my $r = shift =~ s|::|/|gr . '.pm';
+	require $r if not $INC{$r};
+}
+sub flatten (;$) {
+	my $v = @_ ? shift : $_;
+	ref $v eq 'ARRAY' ? @$v : $v;
+}
 BEGIN {
 	no strict 'refs';
 	my @H = ($^H, ${^WARNING_BITS}, %^H);
@@ -31,38 +39,49 @@ BEGIN {
 		while (@_) {
 			my $q = shift;
 			if ($q eq 'iautoload') {
-				my (@pkg, %map, @l);
+				my (@pkg, %map);
 				for (@{+shift}) {
-					my ($p, @f) = ref() ? @$_ : $_;
+					my ($p, @f) = flatten;
 					push @pkg, $p;
 					for (@f) {
-						push @l, $ns . $_ if s/^0//;
-						$map{$_} = $p;
+						my ($from, $to) = flatten;
+						$from =~ s/^([$@%&*])//;
+						$to ||= $from;
+						if (my $s = $1) {
+							state $sigil = {'$' => 'SCALAR',
+									'@' => 'ARRAY',
+									'%' => 'HASH',
+									'&' => 'CODE',
+									'*' => 'GLOB'};
+							_require $p;
+							*{$ns . $to} = *{"${p}::$from"}{$sigil->{$s}};
+						} else {
+							$map{$to} = {from => $from,
+								     module => $p};
+						}
 					}
 				}
-				my $i = 1;
 				*{$ns . 'AUTOLOAD'} = sub {
 					# "fully qualified name of the original subroutine".
 					my $q = our $AUTOLOAD;
 					# to avoid possibly overwrite @_ by successful regular expression match.
-					my ($f) = do { $q =~ /.*::(.*)/ };
-					for my $p ($map{$f} || @pkg) {
+					my ($to) = do { $q =~ /.*::(.*)/ };
+					my $u = $map{$to};
+					my $from = $u->{from} || $to;
+					for my $p ($u->{module} || @pkg) {
 						#   calculate the actual file to be loaded thus avoid eval and
 						# checking $@ mannually.
-						my $r = do { $p =~ s|::|/|gr . '.pm' };
-						require $r if not $INC{$r};
-						if (my $r = *{"${p}::$f"}{CODE}) {
+						_require $p;
+						if (my $r = *{"${p}::$from"}{CODE}) {
 							no warnings 'prototype';
 							*$q = $r;
 							# TODO: understand why using goto will lost context.
 							#goto &$r;
-							return $i ? undef : &$r;
+							return &$r;
 						}
 					}
 					confess("unable to autoload $q.");
 				};
-				$_->() for @l;
-				$i = 0;
 			} elsif ($q eq 'oautoload') {
 				for my $p (@{+shift}) {
 					my $r = $p =~ s|::|/|gr . '.pm';

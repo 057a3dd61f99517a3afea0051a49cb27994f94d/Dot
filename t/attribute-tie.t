@@ -18,7 +18,7 @@
 
 =cut
 # We need ok at compile time for the scalar context of the first argument.
-use Dot 'sane', iautoload => [qw'Scalar::Util Carp', [qw'Test::More 0ok']];
+use Dot 'sane', iautoload => [qw'Scalar::Util Carp', [qw'Test::More &ok']];
 # Class of individual attribute.
 sub mod0 {
 	my ($o, $c) = @_;
