@@ -17,7 +17,7 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 =cut
-use Dot 'sane', iautoload => [qw'Scalar::Util Carp', [qw'Test::More 0ok']];
+use Dot 'sane', iautoload => [qw'Scalar::Util Carp', [qw'Test::More &ok']];
 # Class for the ability to add attribute.
 sub mod {
 	Dot::mod(my $o = shift);
