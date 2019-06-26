@@ -127,6 +127,27 @@ sub mod {
 	    });
 	$o;
 }
+for my $tie (map { "tie$_" } qw/hash array handle scalar/) {
+	no strict 'refs';
+	*{uc $tie} = sub {
+		bless pop, shift;
+	};
+}
+for my $f (qw/binmode clear close delete destroy eof exists extend fetch fetchsize
+	   fileno firstkey getc nextkey open pop print printf push read
+	   readline scalar seek shift splice store storesize tell unshift
+	   untie write/) {
+	no strict 'refs';
+	*{uc $f} = sub {
+		if ($f ne 'destroy') {
+			goto &{shift->{$f}};
+		} else {
+			if (my $subr = shift->{$f}) {
+				goto &$subr;
+			}
+		}
+	};
+}
 1;
 __END__
 
