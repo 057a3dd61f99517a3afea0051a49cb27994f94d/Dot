@@ -148,6 +148,21 @@ for my $f (qw/binmode clear close delete destroy eof exists extend fetch fetchsi
 		}
 	};
 }
+
+package Dot::Overload;
+{ my @op;
+  for my $op (qw'+ - * / % ** << >> x . += -= *= /= %= **= <<= >>= x= .= < <= > >= == != <=> cmp lt le gt ge eq ne & &= | |= ^ ^= &. &.= |. |.= ^. ^.= neg ! ~ ~. ++ -- atan2 cos sin exp abs log sqrt int bool "" 0+ qr <> -X ${} @{} %{} &{} *{} ~~ nomethod fallback =') {
+	  # Is there a way to do this?
+	  next if $op eq '%{}';
+	  push @op, $op, sub {
+		  my $o = shift;
+		  if (my $r = $o->{$op})	{ goto &$r }
+		  else				{ die "$op not defined" }
+	  };
+  }
+  require overload;
+  overload->import(@op) }
+
 1;
 __END__
 
