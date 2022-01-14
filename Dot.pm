@@ -1,5 +1,5 @@
 #   Dot - The beginning of a Perl universe
-#   Copyright © 2018 Yang Bo
+#   Copyright © 2018-2022 Yang Bo
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -531,4 +531,4 @@ GPLv3.
 
 =head1 AUTHOR
 
-Yang Bo <rslovers@yandex.com>
+Yang Bo <yb@rslinux.fun>
